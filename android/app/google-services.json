@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "110181583896",
+    "project_id": "nutracker-29c7f",
+    "storage_bucket": "nutracker-29c7f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:110181583896:android:43c9ab2982b66382acc76d",
+        "android_client_info": {
+          "package_name": "com.example.dart"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "110181583896-n9sbuu8ptrf74tseiig6it206el4i8qb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBSEO7QWqb1OBE-j-F5LoTjPi1VdOeqVjQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "110181583896-n9sbuu8ptrf74tseiig6it206el4i8qb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
