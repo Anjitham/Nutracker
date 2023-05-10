@@ -8,10 +8,9 @@ class Profile extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue,
-        title: const Center(
-          child: Text('Profile'),
+        title: const Text('Profile'),
         ),
-      ),
+      
       body: ListView(
         children: <Widget>[
           Container(
@@ -176,3 +175,5 @@ class Profile extends StatelessWidget {
     );
   }
 }
+
+

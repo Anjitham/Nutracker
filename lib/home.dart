@@ -5,191 +5,103 @@ import 'login.dart';
 import 'profile.dart';
 import 'advice.dart';
 
-
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'My App',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: const HomePage(),
-      debugShowCheckedModeBanner: false,
-    );
-  }
-}
-
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
-  
-
+  const HomePage({Key? key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Home Page'),
+        backgroundColor: Colors.teal,
+        title: const Text(
+          'Home Page',
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        ),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-  margin: const EdgeInsets.all(8.0),
-            child: SizedBox(
-             width: 132,
-             height: 50,
-           child: ElevatedButton(
-               style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white, backgroundColor: Colors.blue,
-              shadowColor: Colors.greenAccent,
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(32.0)),
-              minimumSize: const Size(120, 40), //////// HERE
-            ),
-              
+            ElevatedButton.icon(
               onPressed: () {
                 Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => const Profile()),
-  );
-               },
-
-              child: Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: const [
-      Icon(Icons.person,size: 30,), // add icon
-      SizedBox(width: 10), // add some spacing
-      Text('Profile'), // add text
-    ],
-  ),
-            ),
-
-            ),
-        ),
-        Container(
-  margin: const EdgeInsets.all(8.0),
-
-            child: SizedBox(
-             width: 132,
-             height: 50,
-            child: ElevatedButton(
-               style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white, backgroundColor: Colors.blue,
-              shadowColor: Colors.greenAccent,
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(32.0)),
-              minimumSize: const Size(100, 40), //////// HERE
-            ),
-              
-              onPressed: () {
-                Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => const Input()),
-  );
-                // handle button B press
+                  context,
+                  MaterialPageRoute(builder: (context) => const Profile()),
+                );
               },
-              child: Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: const [
-      Icon(Icons.assignment,size: 30,), // add icon
-      SizedBox(width: 10), // add some spacing
-      Text('Input'), // add text
-    ],
-  ),
+              icon: const Icon(Icons.person),
+              label: const Text(
+                'Profile',
+                
+              ),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.teal,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(32)),
+                ),
+                minimumSize: const Size(200, 50),
+              ),
             ),
-            ),
-        ),
-            
-
-            Container(
-  margin: const EdgeInsets.all(8.0),
-            child: SizedBox(
-             width: 132,
-             height: 50,
-             child: ElevatedButton(
-               style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white, backgroundColor: Colors.blue,
-              shadowColor: Colors.greenAccent,
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(32.0)),
-              minimumSize: const Size(100, 40), //////// HERE
-            ),
-              
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
               onPressed: () {
-
                 Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => const YesNoQuestionsPage()),
-  );
-                // handle button E press
+                  context,
+                  MaterialPageRoute(builder: (context) => const Input()),
+                );
               },
-              child: Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: const [
-      Icon(Icons.menu_book,size: 30,), // add icon
-      SizedBox(width: 10), // add some spacing
-      Text('Advice'), // add text
-    ],
-  ),
+              icon: const Icon(Icons.assignment),
+              label: const Text('Input'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.teal,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(32)),
+                ),
+                minimumSize: const Size(200, 50),
+              ),
             ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const YesNoQuestionsPage()),
+                );
+              },
+              icon: const Icon(Icons.menu_book),
+              label: const Text('Advice'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.teal,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(32)),
+                ),
+                minimumSize: const Size(200, 50),
+              ),
             ),
-            ),
- 
-            Container(
-  margin: const EdgeInsets.all(8.0),
-
-           child: SizedBox(
-             width: 132,
-             height: 50,
-             child: ElevatedButton(
-               style: ElevatedButton.styleFrom(
-              foregroundColor: Colors.white, backgroundColor: Colors.blue,
-              shadowColor: Colors.greenAccent,
-              elevation: 3,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(32.0)),
-              minimumSize: const Size(100, 40), //////// HERE
-            ),
-              
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
               onPressed: () {
                 FirebaseAuth.instance.signOut().then((value) {
                   print("Signed Out");
                   Navigator.of(context).pushReplacement(
-    MaterialPageRoute(builder: (ctx) => const Login())
-                );// handle button E press
-
+                    MaterialPageRoute(builder: (ctx) => const Login()),
+                  );
                 });
-                 
               },
-              child: Row(
-    mainAxisAlignment: MainAxisAlignment.center,
-    children: const [
-      Icon(Icons.logout,size: 30,), // add icon
-      SizedBox(width: 10), // add some spacing
-      Text('Logout'), // add text
-    ],
-  ),
+              icon: const Icon(Icons.logout),
+              label: const Text('Logout'),
+              style: ElevatedButton.styleFrom(
+                foregroundColor: Colors.white, backgroundColor: Colors.red,
+                shape: const RoundedRectangleBorder(
+                  borderRadius: BorderRadius.all(Radius.circular(32)),
+                ),
+                minimumSize: const Size(200, 50),
+              ),
             ),
-            ),
-            ),
-
-
-    
           ],
         ),
       ),

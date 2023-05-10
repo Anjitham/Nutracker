@@ -22,13 +22,13 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Questionnaires'),
+        title: const Text('Questionnaires'),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
             ListTile(
-              title: Text('Does your child under six months have breast milk continuously? '),
+              title: const Text('Does your child under six months have breast milk continuously? '),
               trailing: Switch(
                 value: _question1,
                 onChanged: (value) {
@@ -39,7 +39,7 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               ),
             ),
             ListTile(
-              title: Text('Give immunization protection according to the schedule?'),
+              title: const Text('Give immunization protection according to the schedule?'),
               trailing: Switch(
                 value: _question2,
                 onChanged: (value) {
@@ -50,7 +50,7 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               ),
             ),
             ListTile(
-              title: Text('Did the child got diarrhoea or any other sickness last six months?'),
+              title: const Text('Did the child got diarrhoea or any other sickness last six months?'),
               trailing: Switch(
                 value: _question3,
                 onChanged: (value) {
@@ -61,7 +61,7 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               ),
             ),
             ListTile(
-              title: Text('Did the mother have any sickness during the pregnancy?'),
+              title: const Text('Did the mother have any sickness during the pregnancy?'),
               trailing: Switch(
                 value: _question4,
                 onChanged: (value) {
@@ -72,7 +72,7 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               ),
             ),
             ListTile(
-              title: Text('Provide liquid or semi-solid food atleast three times per day in the 1st year of the child?'),
+              title: const Text('Provide liquid or semi-solid food atleast three times per day in the 1st year of the child?'),
               trailing: Switch(
                 value: _question5,
                 onChanged: (value) {
@@ -83,7 +83,7 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               ),
             ),
             ListTile(
-              title: Text('Did the mother got balanced food during the pregnancy?'),
+              title: const Text('Did the mother got balanced food during the pregnancy?'),
               trailing: Switch(
                 value: _question6,
                 onChanged: (value) {
@@ -94,7 +94,7 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               ),
             ),
             ListTile(
-              title: Text('Each meal contains balanced nutrition foods?'),
+              title: const Text('Each meal contains balanced nutrition foods?'),
               trailing: Switch(
                 value: _question7,
                 onChanged: (value) {
@@ -105,7 +105,7 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               ),
             ),
             ListTile(
-              title: Text('Are you encouraging your child to take a balanced diet?'),
+              title: const Text('Are you encouraging your child to take a balanced diet?'),
               trailing: Switch(
                 value: _question8,
                 onChanged: (value) {
@@ -116,7 +116,7 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               ),
             ),
             ListTile(
-              title: Text('Is your pre-school child taking breakfast daily?'),
+              title: const Text('Is your pre-school child taking breakfast daily?'),
               trailing: Switch(
                 value: _question9,
                 onChanged: (value) {

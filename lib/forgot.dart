@@ -26,7 +26,7 @@ class Forgot extends StatelessWidget {
             Container(
               alignment: Alignment.topLeft,
               padding: const EdgeInsets.all(10),
-              child: Text(
+              child: const Text(
                 'Enter Your Email',
                 style: TextStyle(
                   fontSize: 18,
@@ -34,26 +34,65 @@ class Forgot extends StatelessWidget {
               ),
             ),
             Container(
-              padding: const EdgeInsets.all(10),
-              child: TextField(
-                controller: emailController,
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Email',
-                ),
-              ),
-            ),
-          Container(
-  height: 60,
-  padding: const EdgeInsets.fromLTRB(10, 10, 10, 10),
+  padding: const EdgeInsets.all(5),
+  decoration: BoxDecoration(
+    border: Border.all(
+      color: Colors.teal,
+      width: 2,
+    ),
+    borderRadius: BorderRadius.circular(10),
+  ),
+  child: TextField(
+    keyboardType: TextInputType.emailAddress,
+    controller: emailController,
+    style: const TextStyle(
+      fontSize: 16,
+      color: Colors.black,
+    ),
+    decoration: const InputDecoration(
+      border: InputBorder.none,
+      hintText: 'Enter your email',
+      hintStyle: TextStyle(
+        color: Colors.grey,
+      ),
+      labelText: 'Email',
+      labelStyle: TextStyle(
+        color: Colors.teal,
+        fontSize: 18,
+      ),
+    ),
+  ),
+),
+
+const SizedBox(height: 10),
+
+         Container(
+  height: 50,
+  margin: const EdgeInsets.symmetric(horizontal: 20),
   child: ElevatedButton(
-    child: const Text('Reset Password'),
+    style: ElevatedButton.styleFrom(
+      backgroundColor: Colors.teal,
+      textStyle: const TextStyle(fontSize: 20),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
+      ),
+      elevation: 3,
+      shadowColor: Colors.teal.withOpacity(0.5),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const [
+        Icon(Icons.lock_open_outlined, color: Colors.white),
+        SizedBox(width: 10),
+        Text('Reset Password', style: TextStyle(color: Colors.white)),
+      ],
+    ),
     onPressed: () {
       final String email = emailController.text.trim();
       final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
       if (!emailRegex.hasMatch(email)) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Please enter a valid email')),
+          const SnackBar(content: Text('Please enter a valid email')),
         );
         return;
       }
@@ -61,11 +100,11 @@ class Forgot extends StatelessWidget {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Password Reset'),
+            title: const Text('Password Reset'),
             content: Text('A password reset email has been sent to ${emailController.text}. Please check your email.'),
             actions: [
               ElevatedButton(
-                child: Text('OK'),
+                child: const Text('OK'),
                 onPressed: () {
                   Navigator.push(
                         context,

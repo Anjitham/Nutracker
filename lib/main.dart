@@ -17,7 +17,7 @@ Future<void> main() async {
   runApp(const Login());
   }
 
-class SplashScreen extends StatelessWidget {
+class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +30,7 @@ class SplashScreen extends StatelessWidget {
 
       ),
       debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
+      home: MyApp(),
     );
   }
 }

@@ -1,6 +1,8 @@
 import 'package:dart/camera_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class Input extends StatelessWidget {
   const Input({Key? key}) : super(key: key);
@@ -9,19 +11,14 @@ class Input extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      
-      home: Scaffold(
+    return Scaffold(
         resizeToAvoidBottomInset: false,
         appBar: AppBar(title: const Text('Input')),
         
         body: const SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: MyStatefulWidget(),
+          
+          child:  MyStatefulWidget(),
         ),
-      ),
-      debugShowCheckedModeBanner: false,
-      
     );
   }
 }
@@ -36,12 +33,36 @@ class MyStatefulWidget extends StatefulWidget {
 class _MyStatefulWidgetState extends State<MyStatefulWidget> {
   String _selectedGender = '';
   final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _heightController = TextEditingController();
+  final TextEditingController _weightController = TextEditingController();
+
 final _formKey = GlobalKey<FormState>();
+ 
+ CollectionReference users = FirebaseFirestore.instance.collection('users');
   @override
   void dispose() {
-    _ageController.dispose(); // dispose of the text field controller
+    _ageController.dispose();
+    _heightController.dispose();
+    _weightController.dispose();
+ // dispose of the text field controller
     super.dispose();
   }
+
+    Future<void> addUserInput() {
+    return users
+        .doc('email') // Replace with the user ID
+        .collection('inputs')
+        .add({
+          'age': _ageController.text,
+          'gender': _selectedGender,
+          'height': _heightController.text,
+          'weight': _weightController.text,
+        })
+        .then((value) => print("User input added"))
+        .catchError((error) => print("Failed to add user input: $error"));
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -150,45 +171,37 @@ final _formKey = GlobalKey<FormState>();
     
         
          const SizedBox(height: 20),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: Stack(
-              children: <Widget>[
-                Positioned.fill(
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: <Color>[
-                          Color(0xFF0D47A1),
-                          Color(0xFF1976D2),
-                          Color(0xFF42A5F5),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.all(16.0),
-                    textStyle: const TextStyle(fontSize: 10),
-                  ),
-                  onPressed: () {
-                     if (_formKey.currentState!.validate()) {
-                    Navigator.push(
-    context,
-    MaterialPageRoute(builder: (context) => const CameraPage()),
-  );
-                     }
-
-                  },
-                  child: const Text('Next'),
-                  
-                ),
-              ],
-          ),
-          ),
-      
+        Container(
+  height: 50,
+  margin: const EdgeInsets.symmetric(horizontal: 20),
+  child: ElevatedButton(
+    style: ElevatedButton.styleFrom(
+      backgroundColor: const Color(0xFF26A69A),
+      textStyle: const TextStyle(fontSize: 20),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(30),
+      ),
+      elevation: 3,
+      shadowColor: const Color(0xFF26A69A).withOpacity(0.5),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(Icons.arrow_forward, color: Colors.white),
+        const SizedBox(width: 10),
+        const Text('Next', style: TextStyle(color: Colors.white)),
+      ],
+    ),
+    onPressed: () {
+      addUserInput().then((value) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const CameraPage()),
+        );
+      });
+    },
+  )
+)]
 
 
         
@@ -204,7 +217,7 @@ final _formKey = GlobalKey<FormState>();
 
 
         
-      ],
+      ,
     );
   }
 }

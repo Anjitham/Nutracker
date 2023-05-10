@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 
 import 'package:camera/camera.dart';
@@ -15,6 +16,7 @@ class CameraPage extends StatefulWidget {
 class _CameraPageState extends State<CameraPage> {
   late CameraController _controller;
   late Future<void> _initializeControllerFuture;
+  File? _imageFile;
 
   @override
   void initState() {
@@ -57,9 +59,11 @@ class _CameraPageState extends State<CameraPage> {
       final filePath = '${directory.path}/image.png';
 
       // Take a picture and save it to filePath.
-      
+      final picture = await _controller.takePicture();
 
-      
+      setState(() {
+        _imageFile = File(picture.path);
+      });
     } catch (e) {
       // An error occurred while taking the picture.
       print(e);
@@ -72,21 +76,38 @@ class _CameraPageState extends State<CameraPage> {
       appBar: AppBar(
         title: const Text('Camera'),
       ),
-      body: FutureBuilder<void>(
-        future: _initializeControllerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            // If the Future is complete, display the preview.
-            return CameraPreview(_controller);
-          } else {
-            // Otherwise, display a loading indicator.
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
+      body: Center(
+        child: _imageFile != null
+            ? Image.file(_imageFile!)
+            : FutureBuilder<void>(
+                future: _initializeControllerFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    // If the Future is complete, display the preview.
+                    return CameraPreview(_controller);
+                  } else {
+                    // Otherwise, display a loading indicator.
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                },
+              ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _takePicture,
-        child: const Icon(Icons.camera_alt),
+        onPressed: _imageFile != null
+            ? () async {
+                // Save the image to the device's storage.
+                final directory = await getApplicationDocumentsDirectory();
+                final fileName = '${DateTime.now().millisecondsSinceEpoch}.png';
+                final filePath = '${directory.path}/$fileName';
+                await _imageFile!.copy(filePath);
+
+                // Show a message indicating that the image was saved.
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Image saved successfully!')),
+                );
+              }
+            : _takePicture,
+        child: Icon(_imageFile != null ? Icons.save : Icons.camera_alt),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
