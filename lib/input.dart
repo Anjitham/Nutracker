@@ -69,27 +69,30 @@ final _formKey = GlobalKey<FormState>();
     return Column(
       children: <Widget>[
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-          child: TextFormField(
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(
-                RegExp(r'^[1-5]$'),
-              ),
-            ],
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(),
-              labelText: 'Age',
-              hintText: 'Enter your child\'s age',
-            ),
-            style: const TextStyle(fontSize: 12),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'This field is required.';
-              }
-              return null;
-            },
-          ),
+        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+  child: TextFormField(
+    keyboardType: TextInputType.numberWithOptions(decimal: true),
+    inputFormatters: [
+      FilteringTextInputFormatter.allow(RegExp(r'^[0-4](\.\d{0,1})?$')),
+    ],
+    decoration: const InputDecoration(
+      border: OutlineInputBorder(),
+      labelText: 'Age',
+      hintText: 'Enter a number between 0 and 5',
+    ),
+    style: const TextStyle(fontSize: 12),
+    validator: (value) {
+      if (value == null || value.isEmpty) {
+        return 'This field is required.';
+      }
+      final numValue = double.tryParse(value);
+      if (numValue == null || numValue < 0 || numValue > 5) {
+        return 'Enter a number between 0 and 5';
+      }
+      return null;
+    },
+  ),
+
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
