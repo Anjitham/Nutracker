@@ -86,10 +86,7 @@ class HomePage extends StatelessWidget {
             ElevatedButton.icon(
               onPressed: () {
                 FirebaseAuth.instance.signOut().then((value) {
-                  print("Signed Out");
-                  Navigator.of(context).pushReplacement(
-                    MaterialPageRoute(builder: (ctx) => const Login()),
-                  );
+                
                 });
               },
               icon: const Icon(Icons.logout),

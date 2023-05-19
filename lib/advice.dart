@@ -1,3 +1,4 @@
+import 'package:dart/answer.dart';
 import 'package:flutter/material.dart';
 
 class YesNoQuestionsPage extends StatefulWidget {
@@ -28,7 +29,8 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
         child: Column(
           children: [
             ListTile(
-              title: const Text('Does your child under six months have breast milk continuously? '),
+              title: const Text(
+                  'Does your child under six months have breast milk continuously? '),
               trailing: Switch(
                 value: _question1,
                 onChanged: (value) {
@@ -39,7 +41,8 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               ),
             ),
             ListTile(
-              title: const Text('Give immunization protection according to the schedule?'),
+              title: const Text(
+                  'Give immunization protection according to the schedule?'),
               trailing: Switch(
                 value: _question2,
                 onChanged: (value) {
@@ -50,7 +53,8 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               ),
             ),
             ListTile(
-              title: const Text('Did the child got diarrhoea or any other sickness last six months?'),
+              title: const Text(
+                  'Did the child got diarrhoea or any other sickness last six months?'),
               trailing: Switch(
                 value: _question3,
                 onChanged: (value) {
@@ -61,7 +65,8 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               ),
             ),
             ListTile(
-              title: const Text('Did the mother have any sickness during the pregnancy?'),
+              title: const Text(
+                  'Did the mother have any sickness during the pregnancy?'),
               trailing: Switch(
                 value: _question4,
                 onChanged: (value) {
@@ -72,7 +77,8 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               ),
             ),
             ListTile(
-              title: const Text('Provide liquid or semi-solid food atleast three times per day in the 1st year of the child?'),
+              title: const Text(
+                  'Provide liquid or semi-solid food atleast three times per day in the 1st year of the child?'),
               trailing: Switch(
                 value: _question5,
                 onChanged: (value) {
@@ -83,7 +89,8 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               ),
             ),
             ListTile(
-              title: const Text('Did the mother got balanced food during the pregnancy?'),
+              title: const Text(
+                  'Did the mother got balanced food during the pregnancy?'),
               trailing: Switch(
                 value: _question6,
                 onChanged: (value) {
@@ -105,7 +112,8 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               ),
             ),
             ListTile(
-              title: const Text('Are you encouraging your child to take a balanced diet?'),
+              title: const Text(
+                  'Are you encouraging your child to take a balanced diet?'),
               trailing: Switch(
                 value: _question8,
                 onChanged: (value) {
@@ -116,72 +124,57 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               ),
             ),
             ListTile(
-              title: const Text('Is your pre-school child taking breakfast daily?'),
+              title: const Text(
+                  'Is your pre-school child taking breakfast daily?'),
               trailing: Switch(
                 value: _question9,
                 onChanged: (value) {
                   setState(() {
                     _question9 = value;
                   });
-                  
                 },
               ),
             ),
-              const SizedBox(height: 20),
-          ClipRRect(
-            borderRadius: BorderRadius.circular(4),
-            child: Stack(
-              children: <Widget>[
-                Positioned.fill(
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: <Color>[
-                          Color(0xFF0D47A1),
-                          Color(0xFF1976D2),
-                          Color(0xFF42A5F5),
-                        ],
+            const SizedBox(height: 20),
+            ClipRRect(
+              borderRadius: BorderRadius.circular(4),
+              child: Stack(
+                children: <Widget>[
+                  Positioned.fill(
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: <Color>[
+                            Color(0xFF0D47A1),
+                            Color(0xFF1976D2),
+                            Color(0xFF42A5F5),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                TextButton(
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.all(16.0),
-                    textStyle: const TextStyle(fontSize: 10),
+                  TextButton(
+                    style: TextButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.all(16.0),
+                      textStyle: const TextStyle(fontSize: 10),
+                    ),
+                    onPressed: () {
+                      showModalBottomSheet(
+                        shape: const RoundedRectangleBorder(
+                            borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(16),
+                                topRight: Radius.circular(16))),
+                        context: context,
+                        builder: (context) => Answer(),
+                      );
+                    },
+                    child: const Text('Advice'),
                   ),
-                  onPressed: () {
-
-
-                  },
-                  child: const Text('Advice'),
-                  
-                ),
-              ],
-          ),
-          ),
-      
-
-
-        
-    
-
-
-
-
-
-
-
-
-
-
-        
-      ],
-    
-  
-
-          
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
