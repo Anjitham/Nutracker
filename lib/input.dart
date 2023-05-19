@@ -199,7 +199,7 @@ final _formKey = GlobalKey<FormState>();
       addUserInput().then((value) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => const CameraPage()),
+          MaterialPageRoute(builder: (context) => const ImageUploadScreen()),
         );
       });
     },

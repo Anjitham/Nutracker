@@ -1,117 +1,137 @@
 import 'dart:async';
 import 'dart:io';
 
-
 import 'package:camera/camera.dart';
+import 'package:dart/const.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:image_picker/image_picker.dart';
 
-class CameraPage extends StatefulWidget {
-  const CameraPage({Key? key}) : super(key: key);
+class ImageUploadScreen extends StatefulWidget {
+  const ImageUploadScreen({super.key});
 
   @override
-  _CameraPageState createState() => _CameraPageState();
+  State<ImageUploadScreen> createState() => _ImageUploadScreenState();
 }
 
-class _CameraPageState extends State<CameraPage> {
-  late CameraController _controller;
-  late Future<void> _initializeControllerFuture;
-  File? _imageFile;
+class _ImageUploadScreenState extends State<ImageUploadScreen> {
+  File? _selectedImage;
+  bool _isLoading = false;
+  String _responseText = '';
 
-  @override
-  void initState() {
-    super.initState();
 
-    // Obtain a list of available cameras on the device.
-    final cameras = availableCameras();
 
-    // Initialize the camera controller once the camera is available.
-    _initializeControllerFuture = cameras.then((cameras) {
-      // Get the first camera in the list.
-      final camera = cameras.first;
 
-      // Create a CameraController instance and start it.
-      _controller = CameraController(
-        camera,
-        ResolutionPreset.medium,
-      );
 
-      return _controller.initialize();
-    });
-  }
-
-  @override
-  void dispose() {
-    // Dispose of the controller when the widget is disposed.
-    _controller.dispose();
-
-    super.dispose();
-  }
-
-  Future<void> _takePicture() async {
+  Future<void> _uploadImage() async {
     try {
-      // Ensure that the camera is initialized.
-      await _initializeControllerFuture;
-
-      // Construct the path where the image should be saved using the
-      // path_provider package.
-      final directory = await getTemporaryDirectory();
-      final filePath = '${directory.path}/image.png';
-
-      // Take a picture and save it to filePath.
-      final picture = await _controller.takePicture();
-
       setState(() {
-        _imageFile = File(picture.path);
+        _isLoading = true;
       });
-    } catch (e) {
-      // An error occurred while taking the picture.
-      print(e);
+
+      String apiUrl = 'http://64.227.136.230:8000/upload/file';
+      String fileName = _selectedImage!.path.split('/').last;
+
+      FormData formData = FormData.fromMap({
+        'file': await MultipartFile.fromFile(
+          _selectedImage!.path,
+          filename: fileName,
+        ),
+      });
+
+
+      Response response = await Dio().post(apiUrl, data: formData);
+
+      if (response.statusCode == 200) {
+        setState(() {
+          _responseText = response.data.toString();
+        });
+      } else {
+        setState(() {
+          _responseText = 'Failed to upload image';
+        });
+      }
+    } catch (error) {
+      setState(() {
+        _responseText = 'Error: $error';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
     }
+  }
+
+  Future<void> _selectImage(ImageSource source) async {
+    final pickedImage = await ImagePicker().pickImage(source: source);
+
+    setState(() {
+      if (pickedImage != null) {
+        _selectedImage = File(pickedImage.path);
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Camera'),
+        title: const Text('Image Upload'),
       ),
       body: Center(
-        child: _imageFile != null
-            ? Image.file(_imageFile!)
-            : FutureBuilder<void>(
-                future: _initializeControllerFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    // If the Future is complete, display the preview.
-                    return CameraPreview(_controller);
-                  } else {
-                    // Otherwise, display a loading indicator.
-                    return const Center(child: CircularProgressIndicator());
-                  }
-                },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            _selectedImage != null
+                ? Image.file(
+                    _selectedImage!,
+                    width: 200,
+                    height: 200,
+                  )
+                : const Text('No image selected'),
+            ElevatedButton(
+              onPressed: () {
+                _selectImage(ImageSource.gallery);
+              },
+              child: const Text('Select Image'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                textStyle: const TextStyle(fontSize: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                elevation: 3,
+                shadowColor: Colors.teal.withOpacity(0.5),
               ),
+              onPressed: () {
+                _selectImage(ImageSource.camera);
+              },
+              child: const Text('Take Image'),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal,
+                textStyle: const TextStyle(fontSize: 20),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                elevation: 3,
+                shadowColor: Colors.teal.withOpacity(0.5),
+              ),
+              onPressed:
+                  _selectedImage != null && !_isLoading ? _uploadImage : null,
+              child: const Text('Upload Image'),
+            ),
+            const SizedBox(height: 20),
+            _isLoading
+                ? const CircularProgressIndicator()
+                : Text(_responseText),
+          ],
+        ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _imageFile != null
-            ? () async {
-                // Save the image to the device's storage.
-                final directory = await getApplicationDocumentsDirectory();
-                final fileName = '${DateTime.now().millisecondsSinceEpoch}.png';
-                final filePath = '${directory.path}/$fileName';
-                await _imageFile!.copy(filePath);
-
-                // Show a message indicating that the image was saved.
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Image saved successfully!')),
-                );
-              }
-            : _takePicture,
-        child: Icon(_imageFile != null ? Icons.save : Icons.camera_alt),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }
-
-

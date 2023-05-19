@@ -5,19 +5,38 @@ class YesNoQuestionsPage extends StatefulWidget {
   const YesNoQuestionsPage({Key? key}) : super(key: key);
 
   @override
-  _YesNoQuestionsPageState createState() => _YesNoQuestionsPageState();
+  State<YesNoQuestionsPage> createState() => _YesNoQuestionsPageState();
 }
 
 class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
-  bool _question1 = false;
-  bool _question2 = false;
-  bool _question3 = false;
-  bool _question4 = false;
-  bool _question5 = false;
-  bool _question6 = false;
-  bool _question7 = false;
-  bool _question8 = false;
-  bool _question9 = false;
+  List<bool> question = [
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+    false,
+  ];
+
+  List<Qustion> questionList = const [
+    Qustion(no: "breastfeed till age of 3 ", yes: "Continue till the afe of 3"),
+    Qustion(no: "provide immunisation  ", yes: ""),
+    Qustion(no: "breastfeed till age of 3 ", yes: "Remove"),
+    Qustion(no: "breastfeed till age of 3 ", yes: ""),
+    Qustion(
+        no: "provide  semi solid food like ragi,3times per day ",
+        yes: "continue include food items rich in protein "),
+    Qustion(
+        no: " provide balanced nutritious food like ragi,rice,banana pulp ",
+        yes: "continue"),
+    Qustion(no: "chart a balanced diet", yes: "continue"),
+    Qustion(no: "provide brkfast daily", yes: "continue"),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +51,10 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               title: const Text(
                   'Does your child under six months have breast milk continuously? '),
               trailing: Switch(
-                value: _question1,
+                value: question[0],
                 onChanged: (value) {
                   setState(() {
-                    _question1 = value;
+                    question[0] = value;
                   });
                 },
               ),
@@ -44,10 +63,10 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               title: const Text(
                   'Give immunization protection according to the schedule?'),
               trailing: Switch(
-                value: _question2,
+                value: question[1],
                 onChanged: (value) {
                   setState(() {
-                    _question2 = value;
+                    question[1] = value;
                   });
                 },
               ),
@@ -56,10 +75,10 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               title: const Text(
                   'Did the child got diarrhoea or any other sickness last six months?'),
               trailing: Switch(
-                value: _question3,
+                value: question[2],
                 onChanged: (value) {
                   setState(() {
-                    _question3 = value;
+                    question[2] = value;
                   });
                 },
               ),
@@ -68,10 +87,10 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               title: const Text(
                   'Did the mother have any sickness during the pregnancy?'),
               trailing: Switch(
-                value: _question4,
+                value: question[3],
                 onChanged: (value) {
                   setState(() {
-                    _question4 = value;
+                    question[3] = value;
                   });
                 },
               ),
@@ -80,22 +99,10 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               title: const Text(
                   'Provide liquid or semi-solid food atleast three times per day in the 1st year of the child?'),
               trailing: Switch(
-                value: _question5,
+                value: question[4],
                 onChanged: (value) {
                   setState(() {
-                    _question5 = value;
-                  });
-                },
-              ),
-            ),
-            ListTile(
-              title: const Text(
-                  'Did the mother got balanced food during the pregnancy?'),
-              trailing: Switch(
-                value: _question6,
-                onChanged: (value) {
-                  setState(() {
-                    _question6 = value;
+                    question[4] = value;
                   });
                 },
               ),
@@ -103,10 +110,10 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
             ListTile(
               title: const Text('Each meal contains balanced nutrition foods?'),
               trailing: Switch(
-                value: _question7,
+                value: question[5],
                 onChanged: (value) {
                   setState(() {
-                    _question7 = value;
+                    question[5] = value;
                   });
                 },
               ),
@@ -115,10 +122,10 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               title: const Text(
                   'Are you encouraging your child to take a balanced diet?'),
               trailing: Switch(
-                value: _question8,
+                value: question[6],
                 onChanged: (value) {
                   setState(() {
-                    _question8 = value;
+                    question[6] = value;
                   });
                 },
               ),
@@ -127,10 +134,10 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
               title: const Text(
                   'Is your pre-school child taking breakfast daily?'),
               trailing: Switch(
-                value: _question9,
+                value: question[7],
                 onChanged: (value) {
                   setState(() {
-                    _question9 = value;
+                    question[7] = value;
                   });
                 },
               ),
@@ -161,13 +168,26 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
                     ),
                     onPressed: () {
                       showModalBottomSheet(
-                        shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(16),
-                                topRight: Radius.circular(16))),
-                        context: context,
-                        builder: (context) => Answer(),
-                      );
+                          shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                  topLeft: Radius.circular(16),
+                                  topRight: Radius.circular(16))),
+                          context: context,
+                          builder: (context) {
+                            List<String> newList = [];
+
+                            for (int i = 0; i < questionList.length; i++) {
+                              if (question[i]) {
+                                newList.add(questionList[i].yes);
+                              } else {
+                                newList.add(questionList[i].no);
+                              }
+                            }
+
+                            return Answer(
+                              list: newList,
+                            );
+                          });
                     },
                     child: const Text('Advice'),
                   ),
@@ -179,4 +199,14 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
       ),
     );
   }
+}
+
+class Qustion {
+  final String yes;
+  final String no;
+
+  const Qustion({
+    required this.no,
+    required this.yes,
+  });
 }
