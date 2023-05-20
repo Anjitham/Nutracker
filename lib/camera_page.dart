@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'package:dart/custom_alert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,6 +19,18 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
   File? _selectedImage;
   bool _isLoading = false;
   String _responseText = '';
+  void _showModalBottomSheet() {
+    showModalBottomSheet<void>(
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.transparent,
+      isDismissible: true,
+      context: context, // Make sure to provide the appropriate context
+      builder: (BuildContext context) => AlerWidgets(
+        bmi: widget.bmi.toStringAsFixed(0),
+      ),
+    );
+  }
 
   Future<void> _uploadImage() async {
     try {
@@ -53,6 +66,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
     } catch (error) {
       setState(() {
         _responseText = 'Error: $error';
+        _showModalBottomSheet();
       });
     } finally {
       setState(() {
@@ -78,6 +92,7 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
     log(widget.bmi.toString());
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.teal,
         title: const Text('Image Upload'),
       ),
       body: Center(
@@ -109,7 +124,8 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
               style: ElevatedButton.styleFrom(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-                backgroundColor: Colors.teal,
+                backgroundColor:
+                    _selectedImage != null ? Colors.teal : Colors.grey,
                 textStyle: const TextStyle(fontSize: 20),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
