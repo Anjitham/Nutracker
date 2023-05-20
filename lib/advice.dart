@@ -25,9 +25,8 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
 
   List<Qustion> questionList = const [
     Qustion(no: "breastfeed till age of 3 ", yes: "Continue till the afe of 3"),
-    Qustion(no: "provide immunisation  ", yes: ""),
-    Qustion(no: "breastfeed till age of 3 ", yes: "Remove"),
-    Qustion(no: "breastfeed till age of 3 ", yes: ""),
+   
+  
     Qustion(
         no: "provide  semi solid food like ragi,3times per day ",
         yes: "continue include food items rich in protein "),
@@ -59,42 +58,7 @@ class _YesNoQuestionsPageState extends State<YesNoQuestionsPage> {
                 },
               ),
             ),
-            ListTile(
-              title: const Text(
-                  'Give immunization protection according to the schedule?'),
-              trailing: Switch(
-                value: question[1],
-                onChanged: (value) {
-                  setState(() {
-                    question[1] = value;
-                  });
-                },
-              ),
-            ),
-            ListTile(
-              title: const Text(
-                  'Did the child got diarrhoea or any other sickness last six months?'),
-              trailing: Switch(
-                value: question[2],
-                onChanged: (value) {
-                  setState(() {
-                    question[2] = value;
-                  });
-                },
-              ),
-            ),
-            ListTile(
-              title: const Text(
-                  'Did the mother have any sickness during the pregnancy?'),
-              trailing: Switch(
-                value: question[3],
-                onChanged: (value) {
-                  setState(() {
-                    question[3] = value;
-                  });
-                },
-              ),
-            ),
+           
             ListTile(
               title: const Text(
                   'Provide liquid or semi-solid food atleast three times per day in the 1st year of the child?'),
