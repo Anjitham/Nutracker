@@ -1,11 +1,20 @@
+import 'dart:developer';
 import 'dart:ui';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dart/user.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AlerWidgets extends StatefulWidget {
-  final String bmi;
+  final String status;
+  final String age;
+  final String sex;
+
   const AlerWidgets({
-    required this.bmi,
+    required this.status,
+    required this.age,
+    required this.sex,
     super.key,
   });
 
@@ -16,6 +25,21 @@ class AlerWidgets extends StatefulWidget {
 class _AlerWidgetsState extends State<AlerWidgets> {
   // final VoidCallback onTap;
   bool intial = false;
+
+  Future<void> updateStatusToFirestore(StatusModel user, String uid) async {
+    CollectionReference usersCollection =
+        FirebaseFirestore.instance.collection('status');
+
+    Map<String, dynamic> data = user.toFirestore();
+    try {
+      await usersCollection.doc(uid).update(data);
+      log('User added to Firestore successfully');
+    } catch (error) {
+      log('Error adding user to Firestore: $error');
+    }
+  }
+
+  void catogorize() {}
 
   initialTimer() async {
     await Future.delayed(
@@ -31,8 +55,11 @@ class _AlerWidgetsState extends State<AlerWidgets> {
   @override
   void initState() {
     super.initState();
+    catogorize();
     initialTimer();
   }
+
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -99,9 +126,9 @@ class _AlerWidgetsState extends State<AlerWidgets> {
                     vertical: 15,
                   ),
                   child: Text(
-                    "Your BMI : ${widget.bmi}",
+                    "Your Status :${widget.status} ",
                     style: const TextStyle(
-                      fontSize: 30,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -130,13 +157,50 @@ class _AlerWidgetsState extends State<AlerWidgets> {
                           borderRadius: BorderRadius.circular(30)),
                       backgroundColor: Colors.white,
                     ),
-                    onPressed: () {
-                      Navigator.pop(context);
+                    onPressed: () async {
+                      String? previousStatus;
+                      BuildContext currentContext = context;
+
+                      String? uid;
+
+                      SharedPreferences.getInstance().then((prefs) {
+                        setState(() {
+                          _isLoading = true;
+                          previousStatus = prefs.getString('presentStatus');
+                          uid = prefs.getString('uid');
+                        });
+                        prefs.setString('presentStatus', widget.status);
+                        prefs.setString('previousStatus', previousStatus ?? "");
+                        String formattedDateTime =
+                            DateTime.now().toIso8601String();
+                        prefs.setString('lastChecked', formattedDateTime);
+
+                        updateStatusToFirestore(
+                                StatusModel(
+                                  age: widget.age,
+                                  presentStatus: widget.status,
+                                  previousStatus: previousStatus,
+                                  sex: widget.sex,
+                                ),
+                                uid!)
+                            .then((value) => Navigator.pop(currentContext))
+                            .catchError((onError) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text("Cant Save"),
+                              duration: Duration(seconds: 1),
+                            ),
+                          );
+                          Navigator.pop(currentContext);
+                        });
+                      });
                     },
-                    child: const Text(
-                      "Ok",
-                      style: TextStyle(color: Colors.teal),
-                    ))
+                    child: _isLoading
+                        ? const CircularProgressIndicator()
+                        : const Text(
+                            "Save Your Status",
+                            style: TextStyle(color: Colors.teal),
+                          ))
               ],
             ),
           ),
@@ -161,3 +225,8 @@ Widget circle(double radius, double top, double right, bool intial) =>
         ),
       ),
     );
+
+enum BMICategory {
+  undernourished,
+  normal,
+}

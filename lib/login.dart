@@ -1,8 +1,8 @@
 import 'package:dart/main.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'forgot.dart';
 import 'signup.dart';
-import 'home.dart';
 import 'package:flutter/material.dart';
 
 class MyStatefulWidget extends StatefulWidget {
@@ -61,76 +61,64 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                     color: Colors.black.withOpacity(0.5),
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.symmetric(vertical: 15),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.teal,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: TextField(
-                    keyboardType: TextInputType.emailAddress,
-                    controller: emailController,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                    ),
-                    decoration: const InputDecoration(
-                      contentPadding: EdgeInsets.only(left: 15),
-                      border: InputBorder.none,
-                      hintText: 'Enter your email',
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                      ),
-                      labelText: 'Email',
-                      labelStyle: TextStyle(
-                        color: Colors.teal,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ),
+                const SizedBox(
+                  height: 15,
                 ),
-                const SizedBox(height: 10),
-                Container(
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: Colors.teal,
-                      width: 2,
-                    ),
-                    borderRadius: BorderRadius.circular(10),
+                FiledWidget(emailController: emailController),
+                const SizedBox(height: 20),
+                TextField(
+                  keyboardType: TextInputType.emailAddress,
+                  obscureText: passToggle,
+                  controller: passwordController,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Colors.black,
                   ),
-                  child: TextField(
-                    keyboardType: TextInputType.emailAddress,
-                    obscureText: passToggle,
-                    controller: passwordController,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: Colors.black,
-                    ),
-                    decoration: InputDecoration(
-                      contentPadding: EdgeInsets.only(left: 15),
-                      border: InputBorder.none,
-                      hintText: 'Enter your password',
-                      hintStyle: const TextStyle(
-                        color: Colors.grey,
-                      ),
-                      labelText: 'Password',
-                      labelStyle: const TextStyle(
+                  decoration: InputDecoration(
+                    contentPadding: const EdgeInsets.only(left: 15),
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Colors.teal,
+                          width: 2,
+                        )),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(
                         color: Colors.teal,
-                        fontSize: 18,
+                        width: 2,
                       ),
-                      suffixIcon: InkWell(
-                        onTap: () {
-                          setState(() {
-                            passToggle = !passToggle;
-                          });
-                        },
-                        child: Icon(
-                          passToggle ? Icons.visibility : Icons.visibility_off,
-                          color: Colors.grey,
-                        ),
+                    ),
+                    errorBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Colors.red,
+                          width: 2,
+                        )),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        borderSide: const BorderSide(
+                          color: Colors.teal,
+                          width: 2,
+                        )),
+                    hintText: 'Enter your password',
+                    hintStyle: const TextStyle(
+                      color: Colors.grey,
+                    ),
+                    labelText: 'Password',
+                    labelStyle: const TextStyle(
+                      color: Colors.teal,
+                      fontSize: 18,
+                    ),
+                    suffixIcon: InkWell(
+                      onTap: () {
+                        setState(() {
+                          passToggle = !passToggle;
+                        });
+                      },
+                      child: Icon(
+                        passToggle ? Icons.visibility : Icons.visibility_off,
+                        color: Colors.grey,
                       ),
                     ),
                   ),
@@ -155,12 +143,8 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                 Container(
                   height: 50,
                   margin: const EdgeInsets.symmetric(horizontal: 20),
-                  child:
-                  
-                   ElevatedButton(
-                    style:
-                    
-                     ElevatedButton.styleFrom(
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal,
                       textStyle: const TextStyle(fontSize: 20),
                       shape: RoundedRectangleBorder(
@@ -198,7 +182,7 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                       if (email.isEmpty || password.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                             backgroundColor: Colors.teal,
+                              backgroundColor: Colors.teal,
                               content: Text('Please enter email and password')),
                         );
                         return;
@@ -210,7 +194,11 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                       FirebaseAuth.instance
                           .signInWithEmailAndPassword(
                               email: email, password: password)
-                          .then((value) {
+                          .then((value) async {
+                        final uid = value.user!.uid;
+                        await SharedPreferences.getInstance().then((prefs) {
+                          prefs.setString('uid', uid);
+                        });
                         setState(() {
                           isLoading = false;
                         });
@@ -255,7 +243,9 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
                       child: const Text(
                         'Sign Up',
                         style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],
@@ -263,6 +253,64 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
               ],
             ),
           )),
+    );
+  }
+}
+
+class FiledWidget extends StatelessWidget {
+  const FiledWidget({
+    super.key,
+    required this.emailController,
+  });
+
+  final TextEditingController emailController;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextField(
+      keyboardType: TextInputType.emailAddress,
+      controller: emailController,
+      style: const TextStyle(
+        fontSize: 16,
+        color: Colors.black,
+      ),
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.only(left: 15),
+        focusedBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(
+              color: Colors.teal,
+              width: 2,
+            )),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(
+            color: Colors.teal,
+            width: 2,
+          ),
+        ),
+        errorBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(
+              color: Colors.red,
+              width: 2,
+            )),
+        border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(
+              color: Colors.teal,
+              width: 2,
+            )),
+        hintText: 'Enter your email',
+        hintStyle: const TextStyle(
+          color: Colors.grey,
+        ),
+        labelText: 'Email',
+        labelStyle: const TextStyle(
+          color: Colors.teal,
+          fontSize: 18,
+        ),
+      ),
     );
   }
 }

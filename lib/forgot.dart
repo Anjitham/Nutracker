@@ -79,9 +79,9 @@ const SizedBox(height: 10),
       elevation: 3,
       shadowColor: Colors.teal.withOpacity(0.5),
     ),
-    child: Row(
+    child: const Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: const [
+      children:  [
         Icon(Icons.lock_open_outlined, color: Colors.white),
         SizedBox(width: 10),
         Text('Reset Password', style: TextStyle(color: Colors.white)),

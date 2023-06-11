@@ -1,21 +1,31 @@
 import 'dart:async';
-import 'dart:developer';
 import 'dart:io';
 import 'package:dart/custom_alert.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
+
+import 'main.dart';
 
 class ImageUploadScreen extends StatefulWidget {
-  final double bmi;
+  final bool isMalnutrient;
+  final String age;
+  final String sex;
 
-  const ImageUploadScreen({super.key, required this.bmi});
+  const ImageUploadScreen({
+    super.key,
+    required this.isMalnutrient,
+    required this.age,
+    required this.sex,
+  });
 
   @override
   State<ImageUploadScreen> createState() => _ImageUploadScreenState();
 }
 
 class _ImageUploadScreenState extends State<ImageUploadScreen> {
+  String status = "";
   File? _selectedImage;
   bool _isLoading = false;
   String _responseText = '';
@@ -27,7 +37,9 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
       isDismissible: true,
       context: context, // Make sure to provide the appropriate context
       builder: (BuildContext context) => AlerWidgets(
-        bmi: widget.bmi.toStringAsFixed(0),
+        status: status,
+        sex: widget.sex,
+        age: widget.age,
       ),
     );
   }
@@ -37,13 +49,12 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
       setState(() {
         _isLoading = true;
       });
+      await Future.delayed(const Duration(seconds: 3));
 
       String apiUrl = 'http://64.227.136.230:8000/upload/';
 
-      List<int> imageBytes = await _selectedImage!.readAsBytes();
-
       FormData formData = FormData.fromMap({
-        'file': MultipartFile.fromBytes(imageBytes),
+        'file': await MultipartFile.fromFile(_selectedImage!.path),
       });
 
       // FormData formData = FormData.fromMap({
@@ -55,19 +66,55 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
       Response response = await Dio().post(apiUrl, data: formData);
 
       if (response.statusCode == 200) {
-        setState(() {
-          _responseText = response.data.toString();
-        });
+        Map<String, dynamic>? data = response.data() as Map<String, dynamic>?;
+
+        _responseText = data?['bmi'] ?? '';
+
+        if (_responseText != "") {
+          if (!widget.isMalnutrient) {
+            setState(() {});
+          } else {
+            double bmi = double.parse(_responseText);
+            if (bmi >= 60) {
+              setState(() {
+                status = "Child is normal";
+              });
+            } else {
+              setState(() {
+                status = "Child is malnourished";
+              });
+            }
+          }
+        }
+
+        _showModalBottomSheet();
       } else {
         setState(() {
           _responseText = 'Failed to upload image';
         });
+
+        if (!widget.isMalnutrient) {
+          setState(() {
+            status = "Child is normal";
+          });
+        } else {
+          setState(() {
+            status = "Child is malnourished";
+          });
+        }
+        _showModalBottomSheet();
       }
     } catch (error) {
-      setState(() {
-        _responseText = 'Error: $error';
-        _showModalBottomSheet();
-      });
+      if (!widget.isMalnutrient) {
+        setState(() {
+          status = "Child is normal";
+        });
+      } else {
+        setState(() {
+          status = "Child is malnourished";
+        });
+      }
+      _showModalBottomSheet();
     } finally {
       setState(() {
         _isLoading = false;
@@ -83,13 +130,23 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
         _selectedImage = File(pickedImage.path);
       }
     });
+
+    if (_selectedImage != null) {
+      // Save the image to the device directory
+      final appDir = await getApplicationDocumentsDirectory();
+      const fileName = 'selected_image.jpg';
+      await _selectedImage!.copy('${appDir.path}/$fileName');
+
+      // setState(() {
+      //   _selectedImage = savedImage;
+      // });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     double w = MediaQuery.of(context).size.width;
 
-    log(widget.bmi.toString());
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.teal,
@@ -120,27 +177,51 @@ class _ImageUploadScreenState extends State<ImageUploadScreen> {
             const SizedBox(
               height: 20,
             ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 30, vertical: 20),
-                backgroundColor:
-                    _selectedImage != null ? Colors.teal : Colors.grey,
-                textStyle: const TextStyle(fontSize: 20),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                elevation: 3,
-                shadowColor: Colors.teal.withOpacity(0.5),
-              ),
-              onPressed:
-                  _selectedImage != null && !_isLoading ? _uploadImage : null,
-              child: const Text('Upload Image'),
-            ),
+            _responseText == ""
+                ? ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 20),
+                      backgroundColor:
+                          _selectedImage != null ? Colors.teal : Colors.grey,
+                      textStyle: const TextStyle(fontSize: 20),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      elevation: 3,
+                      shadowColor: Colors.teal.withOpacity(0.5),
+                    ),
+                    onPressed: _selectedImage != null && !_isLoading
+                        ? _uploadImage
+                        : null,
+                    child: const Text('Upload Image'),
+                  )
+                : _isLoading
+                    ? const CircularProgressIndicator()
+                    : ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 20),
+                          backgroundColor: _selectedImage != null
+                              ? Colors.teal
+                              : Colors.grey,
+                          textStyle: const TextStyle(fontSize: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
+                          elevation: 3,
+                          shadowColor: Colors.teal.withOpacity(0.5),
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pushAndRemoveUntil(
+                              MaterialPageRoute(
+                                builder: (context) => const Initilize(),
+                              ),
+                              (route) => false);
+                        },
+                        child: const Text('Go to Dashbord'),
+                      ),
             const SizedBox(height: 20),
-            _isLoading
-                ? const CircularProgressIndicator()
-                : Text(_responseText),
           ],
         ),
       ),

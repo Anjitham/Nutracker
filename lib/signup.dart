@@ -1,7 +1,11 @@
+import 'dart:developer';
+
 import 'package:dart/main.dart';
+import 'package:dart/user.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'home.dart';
 
 class Signup extends StatefulWidget {
@@ -29,17 +33,30 @@ class SignupState extends State<Signup> {
   TextEditingController emailController = TextEditingController();
   bool passToggle = true;
 
-  Future addUserDetails(String name, String email, String phonenumber,
-      String guardianname, String relationship) async {
-    CollectionReference usersCollectionRef =
+  Future<void> addUserToFirestore(UserModel user, String uid) async {
+    CollectionReference usersCollection =
         FirebaseFirestore.instance.collection('users');
-    await FirebaseFirestore.instance.collection('users').add({
-      'name': name,
-      'guardianname': guardianname,
-      'phonenumber': phonenumber,
-      'relationship': relationship,
-      'email': email
-    });
+
+    Map<String, dynamic> data = user.toFirestore();
+    try {
+      await usersCollection.doc(uid).set(data);
+      log('User added to Firestore successfully');
+    } catch (error) {
+      log('Error adding user to Firestore: $error');
+    }
+  }
+
+  Future<void> addStatusToFirestore(StatusModel user, String uid) async {
+    CollectionReference usersCollection =
+        FirebaseFirestore.instance.collection('status');
+
+    Map<String, dynamic> data = user.toFirestore();
+    try {
+      await usersCollection.doc(uid).set(data);
+      log('User added to Firestore successfully');
+    } catch (error) {
+      log('Error adding user to Firestore: $error');
+    }
   }
 
   bool isLoding = false;
@@ -365,30 +382,44 @@ class SignupState extends State<Signup> {
                     .createUserWithEmailAndPassword(
                         email: emailController.text,
                         password: passwordController.text)
-                    .then((value) {
-                  addUserDetails(
-                          nameController.text.trim(),
-                          emailController.text.trim(),
-                          guardiannameController.text.trim(),
-                          phonenumberController.text.trim(),
-                          relationshipController.text.trim())
-                      .then((value) {
-                    setState(() {
-                      isLoding = false;
-                    });
-
-                    Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                          builder: (context) => const Initilize(),
-                        ),
-                        (route) => false);
+                    .then((value) async {
+                  final uid = value.user!.uid;
+                  await SharedPreferences.getInstance().then((prefs) {
+                    prefs.setString('uid', uid);
                   });
-                  print("Created Account");
+                  addUserToFirestore(
+                          UserModel(
+                            email: emailController.text.trim(),
+                            guardianname: guardiannameController.text.trim(),
+                            name: nameController.text.trim(),
+                            number: phonenumberController.text.trim(),
+                            relationship: relationshipController.text.trim(),
+                          ),
+                          uid)
+                      .then((value) {
+                    addStatusToFirestore(
+                            const StatusModel(
+                                age: "Check your status",
+                                presentStatus: "Check your status",
+                                previousStatus: "Check your status",
+                                sex: "Check your status"),
+                            uid)
+                        .then((value) => setState(() {
+                              isLoding = false;
+
+                              Navigator.of(context).pushAndRemoveUntil(
+                                  MaterialPageRoute(
+                                    builder: (context) => const Initilize(),
+                                  ),
+                                  (route) => false);
+                            }));
+                  });
+
                   setState(() {
                     isLoding = false;
                   });
                 }).onError((error, stackTrace) {
-                  print("Error ${error.toString()}");
+                  log("Error ${error.toString()}");
 
                   setState(() {
                     isLoding = false;

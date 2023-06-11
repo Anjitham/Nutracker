@@ -2,11 +2,9 @@ import 'package:dart/firebase_options.dart';
 import 'package:dart/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'login.dart';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +44,10 @@ class Initilize extends StatelessWidget {
           if (user == null) {
             return const MyStatefulWidget();
           } else {
+            // SharedPreferences.getInstance().then((prefs) {
+            //   prefs.setString('uid', user.uid);
+            // });
+
             return const HomePage();
           }
         } else {
